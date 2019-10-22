@@ -4,12 +4,13 @@ const axios = require("axios");
 const parser = require("xml2json");
 const mongoose = require("mongoose");
 const Product = require("../../models/product");
+const domegguk = require("../../lib/authUtils");
 
+// 도매꾹 상품 리스트 가져오기
 router.get("/getItemList", (req, res) => {
   axios
     .get("https://domeggook.com/ssl/api/", { params: req.query })
     .then(response => {
-      console.log(parser.toJson(response.data));
       res.json(parser.toJson(response.data));
     })
     .catch(error => {
@@ -17,13 +18,57 @@ router.get("/getItemList", (req, res) => {
     });
 });
 
-router.post("/addItem", (req, res) => {
+//선택한 상품 상세정보 추가
+router.post("/addItem", async (req, res) => {
+  var productDetailInfo = {};
+  const params = {
+    ver: "4.2",
+    mode: "getItemView",
+    aid: domegguk.key,
+    no: req.body.productNo
+  };
+
+  await axios
+    .get("https://domeggook.com/ssl/api/", { params })
+    .then(response => {
+      productDetailInfo = JSON.parse(parser.toJson(response.data));
+    })
+    .catch(error => {
+      console.log(error);
+    });
+
+  const {
+    basis,
+    price,
+    qty,
+    thumb,
+    deli,
+    desc,
+    selectOpt,
+    seller,
+    benefits,
+    detail,
+    category,
+    return: takeBack,
+    priceCompare,
+    event
+  } = productDetailInfo.domeggook;
+
   let addItem = new Product({
-    productName: req.body.productName,
-    productPrice: req.body.productPrice,
-    productImage: req.body.productImage,
-    productNo: req.body.productNo,
-    productId: req.body.productId
+    basis: basis,
+    price: price,
+    qty: qty,
+    deli: deli,
+    images: thumb,
+    desc: desc,
+    selectOpt: selectOpt,
+    seller: seller,
+    benefits: benefits,
+    detail: detail,
+    category: category,
+    takeBack: takeBack,
+    priceCompare: priceCompare,
+    event: event
   });
 
   addItem.save(err => {
@@ -39,6 +84,7 @@ router.get("/getAddItemList", (req, res) => {
   });
 });
 
+// 선택한 상품 삭제하기
 router.delete("/removeItem/:id", (req, res) => {
   Product.remove({ _id: req.params.id }, err => {
     if (err) throw err;
