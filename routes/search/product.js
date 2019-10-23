@@ -21,6 +21,7 @@ router.get("/getItemList", (req, res) => {
 //선택한 상품 상세정보 추가
 router.post("/addItem", async (req, res) => {
   var productDetailInfo = {};
+  var selectOption = {};
   const params = {
     ver: "4.2",
     mode: "getItemView",
@@ -32,6 +33,7 @@ router.post("/addItem", async (req, res) => {
     .get("https://domeggook.com/ssl/api/", { params })
     .then(response => {
       productDetailInfo = JSON.parse(parser.toJson(response.data));
+      selectOption = JSON.parse(productDetailInfo.domeggook.selectOpt);
     })
     .catch(error => {
       console.log(error);
@@ -44,7 +46,6 @@ router.post("/addItem", async (req, res) => {
     thumb,
     deli,
     desc,
-    selectOpt,
     seller,
     benefits,
     detail,
@@ -61,7 +62,7 @@ router.post("/addItem", async (req, res) => {
     deli: deli,
     images: thumb,
     desc: desc,
-    selectOpt: selectOpt,
+    selectOpt: selectOption,
     seller: seller,
     benefits: benefits,
     detail: detail,

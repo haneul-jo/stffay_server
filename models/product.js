@@ -33,7 +33,7 @@ const ProductItemShcema = new Schema({
   delivery: Schema.Types.Mixed,
   images: Schema.Types.Mixed,
   desc: Schema.Types.Mixed,
-  selectOpt: String,
+  selectOpt: Schema.Types.Mixed,
   seller: Schema.Types.Mixed,
   benefits: Schema.Types.Mixed,
   detail: Schema.Types.Mixed,
