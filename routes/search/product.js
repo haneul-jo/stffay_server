@@ -32,8 +32,16 @@ router.post("/addItem", async (req, res) => {
   await axios
     .get("https://domeggook.com/ssl/api/", { params })
     .then(response => {
+      console.log(" >>>>>>>>> response >>>>>>>>>> ");
+      console.log(response);
+
       productDetailInfo = JSON.parse(parser.toJson(response.data));
-      selectOption = JSON.parse(productDetailInfo.domeggook.selectOpt);
+
+      console.log(" >>>>>>>>> productDetailInfo.domeggook");
+      console.log(productDetailInfo.domeggook);
+
+      if (productDetailInfo.domeggook.selectOpt)
+        selectOption = JSON.parse(productDetailInfo.domeggook.selectOpt);
     })
     .catch(error => {
       console.log(error);
@@ -54,6 +62,11 @@ router.post("/addItem", async (req, res) => {
     priceCompare,
     event
   } = productDetailInfo.domeggook;
+
+  console.log(" >>>>>> productDetailInfo.domeggook >>>>>>>>");
+  console.log(productDetailInfo.domeggook);
+  console.log(" >>>>>> selectOption >>>>>>>>");
+  console.log(selectOption);
 
   let addItem = new Product({
     basis: basis,
