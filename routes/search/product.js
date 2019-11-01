@@ -8,8 +8,23 @@ const domegguk = require("../../lib/authUtils");
 
 // 도매꾹 상품 리스트 가져오기
 router.get("/getItemList", (req, res) => {
+  const { categoryNo, keyword } = req.query;
+
+  let ca = categoryNo || "";
+  let kw = keyword || "";
+
+  const params = {
+    ver: "4.0",
+    mode: "getItemList",
+    aid: "de97efe43379339b34cc29cdc0d3c898",
+    market: "supply",
+    sz: 10,
+    ca,
+    kw
+  };
+
   axios
-    .get("https://domeggook.com/ssl/api/", { params: req.query })
+    .get("https://domeggook.com/ssl/api/", { params })
     .then(response => {
       res.json(parser.toJson(response.data));
     })
@@ -75,11 +90,6 @@ router.post("/addItem", async (req, res) => {
     priceCompare,
     event
   } = productDetailInfo.domeggook;
-
-  // console.log(" >>>>>> productDetailInfo.domeggook >>>>>>>>");
-  // console.log(productDetailInfo.domeggook);
-  // console.log(" >>>>>> selectOption >>>>>>>>");
-  // console.log(selectOption);
 
   let addItem = new Product({
     basis: basis,
