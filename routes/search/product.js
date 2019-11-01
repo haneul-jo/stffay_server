@@ -18,6 +18,26 @@ router.get("/getItemList", (req, res) => {
     });
 });
 
+//도매매 카테고리 정보 가져오기
+router.get("/getCategoryList", (req, res) => {
+  const params = {
+    ver: "2.0",
+    mode: "getCat",
+    aid: "de97efe43379339b34cc29cdc0d3c898",
+    market: "domeme",
+    withZero: false
+  };
+
+  axios
+    .get("https://domeggook.com/ssl/api/", { params })
+    .then(response => {
+      res.json(parser.toJson(response.data));
+    })
+    .catch(error => {
+      console.log(error);
+    });
+});
+
 //선택한 상품 상세정보 추가
 router.post("/addItem", async (req, res) => {
   var productDetailInfo = {};
@@ -32,14 +52,7 @@ router.post("/addItem", async (req, res) => {
   await axios
     .get("https://domeggook.com/ssl/api/", { params })
     .then(response => {
-      console.log(" >>>>>>>>> response >>>>>>>>>> ");
-      console.log(response);
-
       productDetailInfo = JSON.parse(parser.toJson(response.data));
-
-      console.log(" >>>>>>>>> productDetailInfo.domeggook");
-      console.log(productDetailInfo.domeggook);
-
       if (productDetailInfo.domeggook.selectOpt)
         selectOption = JSON.parse(productDetailInfo.domeggook.selectOpt);
     })
@@ -63,10 +76,10 @@ router.post("/addItem", async (req, res) => {
     event
   } = productDetailInfo.domeggook;
 
-  console.log(" >>>>>> productDetailInfo.domeggook >>>>>>>>");
-  console.log(productDetailInfo.domeggook);
-  console.log(" >>>>>> selectOption >>>>>>>>");
-  console.log(selectOption);
+  // console.log(" >>>>>> productDetailInfo.domeggook >>>>>>>>");
+  // console.log(productDetailInfo.domeggook);
+  // console.log(" >>>>>> selectOption >>>>>>>>");
+  // console.log(selectOption);
 
   let addItem = new Product({
     basis: basis,
@@ -91,6 +104,7 @@ router.post("/addItem", async (req, res) => {
   });
 });
 
+// 저장한 상품 가져오기
 router.get("/getAddItemList", (req, res) => {
   Product.find().exec((err, ProductItems) => {
     if (err) throw err;
