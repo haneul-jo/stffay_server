@@ -4,7 +4,7 @@ const axios = require("axios");
 const parser = require("xml2json");
 const mongoose = require("mongoose");
 const Product = require("../../models/product");
-const domegguk = require("../../lib/authUtils");
+const { domegguk } = require("../../lib/authUtils");
 
 // 도매꾹 상품 리스트 가져오기
 router.get("/getItemList", (req, res) => {
@@ -16,7 +16,7 @@ router.get("/getItemList", (req, res) => {
   const params = {
     ver: "4.0",
     mode: "getItemList",
-    aid: "de97efe43379339b34cc29cdc0d3c898",
+    aid: domegguk.key,
     market: "supply",
     sz: 10,
     ca,
@@ -24,7 +24,7 @@ router.get("/getItemList", (req, res) => {
   };
 
   axios
-    .get("https://domeggook.com/ssl/api/", { params })
+    .get(domegguk.url, { params })
     .then(response => {
       res.json(parser.toJson(response.data));
     })
@@ -38,13 +38,13 @@ router.get("/getCategoryList", (req, res) => {
   const params = {
     ver: "2.0",
     mode: "getCat",
-    aid: "de97efe43379339b34cc29cdc0d3c898",
+    aid: domegguk.key,
     market: "domeme",
     withZero: false
   };
 
   axios
-    .get("https://domeggook.com/ssl/api/", { params })
+    .get(domegguk.url, { params })
     .then(response => {
       res.json(parser.toJson(response.data));
     })
@@ -65,7 +65,7 @@ router.post("/addItem", async (req, res) => {
   };
 
   await axios
-    .get("https://domeggook.com/ssl/api/", { params })
+    .get(domegguk.url, { params })
     .then(response => {
       productDetailInfo = JSON.parse(parser.toJson(response.data));
       if (productDetailInfo.domeggook.selectOpt)
