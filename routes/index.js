@@ -12,8 +12,8 @@ router.get("/", (req, res) => {
   //   res.sendFile(path.join(__dirname, "../public/main.html"));
 });
 
-router.use("/register", register);
 router.use("/search", search);
+router.use("/register", register);
 router.use("/main", main);
 
 module.exports = router;

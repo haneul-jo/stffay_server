@@ -3,15 +3,60 @@ const router = express.Router();
 const axios = require("axios");
 const iconv = require("iconv-lite");
 const parser = require("xml2json");
-const jsontoxml = require("jsontoxml");
-const querystring = require("querystring");
-const elevenSt = require("../../lib/authUtils");
-const eucKrToUtf8 = require("../../lib/utils");
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
+const { elevenSt } = require("../../lib/authUtils");
+
+//11번가 등록된 상품 전체 조회하기
+router.get("/getMyProductList", async (req, res) => {
+  var xmlBodyStr = `<?xml version="1.0" encoding="euc-kr" standalone="yes"?>
+    <SearchProduct>
+        <limit>5</limit>
+    </SearchProduct>`;
+
+  var config = {
+    responseType: "arraybuffer",
+    responseEncoding: "binary",
+    headers: {
+      "Content-Type": "text/xml; charset=euc-kr",
+      openapikey: elevenSt.key
+    }
+  };
+
+  const param = iconv.encode(xmlBodyStr, "euc-kr");
+
+  await axios
+    .post(
+      "http://api.11st.co.kr/rest/prodmarketservice/prodmarket",
+      param,
+      config
+    )
+    .then(response => {
+      console.log(" >>>>>>> response >>>>>>>>>");
+      console.log(response.data);
+
+      const result = iconv.decode(response.data, "euc-kr");
+
+      console.log(" >>>>>>> result >>>>>>>>>");
+      console.log(result);
+      //   console.log(" >>>>>>> typeof result >>>>>>>>>");
+      //   console.log(typeof result);
+
+      const resultDom = new JSDOM(result);
+
+      console.log(" >>>>>>> resultDom >>>>>>>>>");
+      console.log(resultDom);
+      console.log(resultDom.window.document.querySelector("ns2:product"));
+
+      //   res.json(parser.toJson(result));
+    })
+    .catch(error => {
+      console.log(error);
+    });
+});
 
 //선택한 상품 상세정보 추가
 router.post("/registerProduct", async (req, res) => {
-  console.log(" >>>>>>>>>>>> registerProduct req >>>>>>>>>>");
-  console.log(req);
   const { productTitle, desc } = req.body;
 
   var xmlBodyStr = `<?xml version="1.0" encoding="euc-kr" standalone="yes"?>
@@ -19,7 +64,7 @@ router.post("/registerProduct", async (req, res) => {
     <selMthdCd>01</selMthdCd>
     <dispCtgrNo>1009024</dispCtgrNo>
     <prdTypCd>01</prdTypCd>
-    <prdNm>담요 test</prdNm>
+    <prdNm>${productTitle}</prdNm>
     <brand>자체상품</brand>
     <rmaterialTypCd>04</rmaterialTypCd>
     <orgnTypCd>02</orgnTypCd>
@@ -28,7 +73,11 @@ router.post("/registerProduct", async (req, res) => {
     <prdStatCd>01</prdStatCd>
     <minorSelCnYn>Y</minorSelCnYn>
     <prdImage01>http://store.img11.co.kr/39339286/7c1217f1-d6e2-4034-851a-28913d433fbe_1572417410001.jpeg</prdImage01>
-    <htmlDetail>test</htmlDetail>
+    <htmlDetail>  
+        <![CDATA[
+            ${desc}
+        ]]>  
+      </htmlDetail>
     <selPrdClfCd>3:101</selPrdClfCd>
     <aplBgnDy>2019/11/05</aplBgnDy>
     <aplEndDy>2019/11/07</aplEndDy>
@@ -104,22 +153,20 @@ router.post("/registerProduct", async (req, res) => {
 
   const param = iconv.encode(xmlBodyStr, "euc-kr");
 
-  //   await axios
-  //     .post("http://api.11st.co.kr/rest/prodservices/product", param, config)
-  //     .then(response => {
-  //       const result = iconv.decode(response.data, "euc-kr");
-  //       console.log(result);
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //     });
+  await axios
+    .post("http://api.11st.co.kr/rest/prodservices/product", param, config)
+    .then(response => {
+      const result = iconv.decode(response.data, "euc-kr");
+      console.log(">>>>>>>>>>>>>>>>>> 11번가 상품 리스트 데이터 >>>>>>>>>>>>>");
+      console.log(result);
+    })
+    .catch(error => {
+      console.log(error);
+    });
 });
 
 //선택한 상품 상세정보 수정
 router.put("/modifyProduct", async (req, res) => {
-  console.log(" >>>>>>>>>>>> req >>>>>>>>>>");
-  console.log(req);
-
   const { productTitle, desc } = req.body;
 
   var xmlBodyStr = `<?xml version="1.0" encoding="euc-kr" standalone="yes"?>
