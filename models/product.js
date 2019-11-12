@@ -15,7 +15,7 @@ const Schema = mongoose.Schema;
 /*
  * 참고 url: http://openapi.domeggook.com/main/reference/detail?api_no=73&scope_code=SCP_OPEN
  */
-const ProductItemShcema = new Schema({
+const ProductItemSchema = new Schema({
   // basis : {
   // no: Number,
   // status: String,
@@ -43,4 +43,4 @@ const ProductItemShcema = new Schema({
   event: Schema.Types.Mixed
 });
 
-module.exports = mongoose.model("ProductItem", ProductItemShcema);
+module.exports = mongoose.model("ProductItem", ProductItemSchema);

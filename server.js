@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const logger = require("morgan");
+const session = require("express-session");
 const app = express();
 const PORT = 4000;
 
@@ -11,6 +12,15 @@ const dbRoute = "mongodb://localhost/staffy";
 
 mongoose.connect(dbRoute, { useNewUrlParser: true });
 let db = mongoose.connection;
+
+/* use session */
+app.use(
+  session({
+    secret: "staffy1234",
+    resave: false,
+    saveUninitialized: true
+  })
+);
 
 db.once("open", () => console.log("connected to the database >>>>>>> "));
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
