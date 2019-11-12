@@ -32,21 +32,8 @@ router.get("/getMyProductList", async (req, res) => {
       config
     )
     .then(response => {
-      console.log(" >>>>>>> response >>>>>>>>>");
-      console.log(response.data);
-
       const result = iconv.decode(response.data, "euc-kr");
-
-      console.log(" >>>>>>> result >>>>>>>>>");
-      console.log(result);
-      //   console.log(" >>>>>>> typeof result >>>>>>>>>");
-      //   console.log(typeof result);
-
       const resultDom = new JSDOM(result);
-
-      console.log(" >>>>>>> resultDom >>>>>>>>>");
-      console.log(resultDom);
-      console.log(resultDom.window.document.querySelector("ns2:product"));
 
       //   res.json(parser.toJson(result));
     })
