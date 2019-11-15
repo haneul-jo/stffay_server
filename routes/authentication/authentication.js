@@ -25,7 +25,6 @@ router.post("/signin", (req, res) => {
     }
 
     // 유저검색 결과가 있으면 검사 salt값으로 해쉬
-    // const validate =
     hasher({ password: req.body.password, salt: account.salt }, function(
       err,
       pass,
@@ -34,25 +33,19 @@ router.post("/signin", (req, res) => {
     ) {
       // 입력한 비밀번호를 이용해 만든 해쉬와 DB에 저장된 비밀번호가 같을 경우
       if (hash === account.password) {
-        console.log(" >>> req.session");
-        console.log(req.session);
-
         req.session.loginInfo = {
           _id: account._id,
           username: account.username
         };
 
         req.session.save(err => {
-          console.log(">> session 저장 >>");
-          console.log(req.session);
-          console.log(">> req check  >>");
-          console.log(req);
           if (!err) {
-            return res.json({
+            // return res.json({
+            res.json({
               success: true
             });
           } else {
-            return res.json({
+            res.json({
               success: false
             });
           }
@@ -71,14 +64,6 @@ router.post("/signin", (req, res) => {
     GET CURRENT USER INFO GET /api/authentication/getInfo
 */
 router.get("/loginInfo", (req, res) => {
-  // console.log(" >>>> req >>> /loginInfo");
-  // console.log(req);
-  console.log(">> 0");
-  console.log(" >>>>>>> req.session >>> /loginInfo");
-  console.log(req.session);
-  // console.log(" >>>>>>> req.session.loginInfo >>> /loginInfo");
-  // console.log(req.session.loginInfo);
-
   if (typeof req.session.loginInfo === "undefined") {
     console.log(">> 1");
     return res.status(401).json({
@@ -86,7 +71,6 @@ router.get("/loginInfo", (req, res) => {
       error: "로그인 정보가 없습니다."
     });
   }
-  console.log(">> 2");
   res.json({ loginInfo: req.session.loginInfo });
 });
 
