@@ -10,15 +10,14 @@ const PORT = 4000;
 const router = require("./routes/index");
 
 // DB없이 테스트할 경우
-const isNonDB = false;
+const isNoneDB = false;
 
 let sessionOpt = {
   secret: "staffy1234",
   resave: false,
-  saveUninitialized: false,
-
+  saveUninitialized: false
 };
-if(!isNonDB){
+if (!isNoneDB) {
   // const dbRoute =
   //   "mongodb+srv://admin:admin1234@cluster0-ndqf2.mongodb.net/test?retryWrites=true&w=majority";
   const dbRoute = "mongodb://localhost/staffy";
@@ -28,7 +27,7 @@ if(!isNonDB){
 
   db.once("open", () => console.log("connected to the database >>>>>>> "));
   db.on("error", console.error.bind(console, "MongoDB connection error:"));
-  sessionOpt.store =  new MongoStore({
+  sessionOpt.store = new MongoStore({
     url: dbRoute,
     collection: "sessions"
   });
@@ -46,9 +45,7 @@ app.use(
 app.use(logger("dev"));
 /* use session */
 app.use(cookieParser("staffy1234"));
-app.use(
-  session(sessionOpt)
-);
+app.use(session(sessionOpt));
 app.use(router);
 
 /* handle error */
