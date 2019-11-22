@@ -1,17 +1,21 @@
 const express = require("express");
-const app = express();
 var router = express.Router();
-var path = require("path");
 
+const account = require("./account/account");
+const connect = require("./account/connect");
+const authentication = require("./authentication/authentication");
 const main = require("./main/main");
-const domeggook = require("./dome/domeggook");
+const search = require("./search/product");
+const register = require("./register/product");
 
 router.get("/", (req, res) => {
   res.send(">>>> index >>>");
-  //   res.sendFile(path.join(__dirname, "../public/main.html"));
 });
-
-router.use("/dome", domeggook);
+router.use("/authentication", authentication);
+router.use("/account", account);
+router.use("/connect", connect);
+router.use("/search", search);
+router.use("/register", register);
 router.use("/main", main);
 
 module.exports = router;
