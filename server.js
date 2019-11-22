@@ -9,15 +9,30 @@ const app = express();
 const PORT = 4000;
 const router = require("./routes/index");
 
-// const dbRoute =
-//   "mongodb+srv://admin:admin1234@cluster0-ndqf2.mongodb.net/test?retryWrites=true&w=majority";
-const dbRoute = "mongodb://localhost/staffy";
+// DB없이 테스트할 경우
+const isNonDB = false;
 
-mongoose.connect(dbRoute, { useNewUrlParser: true });
-let db = mongoose.connection;
+let sessionOpt = {
+  secret: "staffy1234",
+  resave: false,
+  saveUninitialized: false,
 
-db.once("open", () => console.log("connected to the database >>>>>>> "));
-db.on("error", console.error.bind(console, "MongoDB connection error:"));
+};
+if(!isNonDB){
+  // const dbRoute =
+  //   "mongodb+srv://admin:admin1234@cluster0-ndqf2.mongodb.net/test?retryWrites=true&w=majority";
+  const dbRoute = "mongodb://localhost/staffy";
+
+  mongoose.connect(dbRoute, { useNewUrlParser: true });
+  let db = mongoose.connection;
+
+  db.once("open", () => console.log("connected to the database >>>>>>> "));
+  db.on("error", console.error.bind(console, "MongoDB connection error:"));
+  sessionOpt.store =  new MongoStore({
+    url: dbRoute,
+    collection: "sessions"
+  });
+}
 
 app.use(express.static("public"));
 app.use(express.json());
@@ -32,15 +47,7 @@ app.use(logger("dev"));
 /* use session */
 app.use(cookieParser("staffy1234"));
 app.use(
-  session({
-    secret: "staffy1234",
-    resave: false,
-    saveUninitialized: false,
-    store: new MongoStore({
-      url: dbRoute,
-      collection: "sessions"
-    })
-  })
+  session(sessionOpt)
 );
 app.use(router);
 
