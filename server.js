@@ -33,7 +33,8 @@ if (!isNoneDB) {
   });
 }
 
-app.use(express.static("public"));
+// 이미지, CSS 파일 및 JavaScript 파일과 같은 정적 파일을 제공 :: 불필요
+// app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
