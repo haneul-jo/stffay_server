@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const iconv = require("iconv-lite");
-const parser = require("xml2json");
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 const { elevenSt } = require("../../lib/authUtils");

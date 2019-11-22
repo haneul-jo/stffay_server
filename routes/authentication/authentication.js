@@ -5,9 +5,6 @@ var bkfd2Password = require("pbkdf2-password");
 var hasher = bkfd2Password();
 
 router.post("/signin", (req, res) => {
-  console.log(" >>>>>>>>> req >>>>>>>>");
-  console.log(req);
-
   // 비밀번호 데이터 타입 검사 (문자열인지 아닌지)
   if (typeof req.body.password !== "string") {
     return res.status(401).json({
