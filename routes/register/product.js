@@ -6,21 +6,35 @@ const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 const { elevenSt } = require("../../lib/authUtils");
 
+const xmljs = require('xml-js');
+
+const config11St = {
+  responseType: "arraybuffer",
+  responseEncoding: "binary",
+  headers: {
+    "Content-Type": "text/xml",
+    openapikey: elevenSt.key
+  }
+};
+
 //11번가 등록된 상품 전체 조회하기
 router.get("/getMyProductList", async (req, res) => {
+
+
+
   var xmlBodyStr = `<?xml version="1.0" encoding="euc-kr" standalone="yes"?>
     <SearchProduct>
         <limit>5</limit>
     </SearchProduct>`;
 
-  var config = {
-    responseType: "arraybuffer",
-    responseEncoding: "binary",
-    headers: {
-      "Content-Type": "text/xml; charset=euc-kr",
-      openapikey: elevenSt.key
-    }
-  };
+  // var config = {
+  //   responseType: "arraybuffer",
+  //   responseEncoding: "binary",
+  //   headers: {
+  //     "Content-Type": "text/xml;",
+  //     openapikey: elevenSt.key
+  //   }
+  // };
 
   const param = iconv.encode(xmlBodyStr, "euc-kr");
 
@@ -28,13 +42,23 @@ router.get("/getMyProductList", async (req, res) => {
     .post(
       "http://api.11st.co.kr/rest/prodmarketservice/prodmarket",
       param,
-      config
+      config11St
     )
     .then(response => {
-      const result = iconv.decode(response.data, "euc-kr");
-      const resultDom = new JSDOM(result);
+      // console.log(response)
+      const data = iconv.decode(response.data, "euc-kr");
 
-      //   res.json(parser.toJson(result));
+      let result = xmljs.xml2json(data, {ignoreDeclaration: true, compact: true});
+      result = JSON.parse(result);
+
+      // console.log(result["ns2:products"]["ns2:product"]);
+
+      let product = result["ns2:products"]["ns2:product"];
+
+      for(p of product){
+        // TODO: 한글꺠짐
+        console.log(p.prdNo._text, p.prdNm._text)
+      }
     })
     .catch(error => {
       console.log(error);
