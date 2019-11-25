@@ -20,23 +20,27 @@ const config11St = {
 //11번가 등록된 상품 전체 조회하기
 router.get("/getMyProductList", async (req, res) => {
 
+  // var xmlBodyStr = `<?xml version="1.0" encoding="euc-kr" standalone="yes"?>
+  //   <SearchProduct>
+  //       <limit>5</limit>
+  //   </SearchProduct>`;
 
+  let body = {
+    "_declaration": {
+      "_attributes": {
+        "version": "1.0",
+        "encoding": "euc-kr",
+        "standalone": "yes"
+      }
+    },
+    SearchProduct: {
+      limit : 5
+    }
+  }
+  body = xmljs.json2xml(body, {compact: true});
 
-  var xmlBodyStr = `<?xml version="1.0" encoding="euc-kr" standalone="yes"?>
-    <SearchProduct>
-        <limit>5</limit>
-    </SearchProduct>`;
-
-  // var config = {
-  //   responseType: "arraybuffer",
-  //   responseEncoding: "binary",
-  //   headers: {
-  //     "Content-Type": "text/xml;",
-  //     openapikey: elevenSt.key
-  //   }
-  // };
-
-  const param = iconv.encode(xmlBodyStr, "euc-kr");
+  // console.log(body);
+  const param = iconv.encode(body, "euc-kr");
 
   await axios
     .post(
